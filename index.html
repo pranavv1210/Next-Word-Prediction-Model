@@ -5,81 +5,17 @@
   <title>Next Word Prediction (AI-powered)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      background: #f7f7fa;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
-      min-height: 100vh;
-    }
-    h2 {
-      margin-top: 40px;
-      color: #333;
-    }
-    .container {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-    }
-    #input-box {
-      font-size: 1.2em;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 12px 10px;
-      border: 1.5px solid #bbb;
-      border-radius: 6px;
-      background: #fff;
-      color: #222;
-      outline: none;
-      z-index: 2;
-      position: relative;
-    }
-    #input-box:focus {
-      border-color: #4f8cff;
-      box-shadow: 0 0 0 2px #e0eaff;
-    }
-    #suggestion-word {
-      margin-top: 12px;
-      font-size: 1.1em;
-      color: #4f8cff;
-      background: #eaf1ff;
-      border-radius: 4px;
-      padding: 6px 14px;
-      display: inline-block;
-      cursor: pointer;
-      transition: background 0.2s;
-      border: none;
-      outline: none;
-    }
-    #suggestion-word:hover {
-      background: #d0e3ff;
-    }
-    #suggestion-word[hidden] {
-      display: none;
-    }
-    .loading {
-      color: #4f8cff;
-      font-size: 0.95em;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .error {
-      color: #d32f2f;
-      font-size: 0.95em;
-      margin-top: 10px;
-    }
-    @media (max-width: 600px) {
-      .container { max-width: 98vw; }
-      #input-box { font-size: 1em; }
-      #suggestion-word { font-size: 1em; }
-    }
+    body { background: #f7f7fa; font-family: 'Segoe UI', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; }
+    h2 { margin-top: 40px; color: #333; }
+    .container { width: 100%; max-width: 500px; margin-top: 40px; display: flex; flex-direction: column; align-items: stretch; }
+    #input-box { font-size: 1.2em; width: 100%; box-sizing: border-box; padding: 12px 10px; border: 1.5px solid #bbb; border-radius: 6px; background: #fff; color: #222; outline: none; z-index: 2; position: relative; }
+    #input-box:focus { border-color: #4f8cff; box-shadow: 0 0 0 2px #e0eaff; }
+    #suggestion-word { margin-top: 12px; font-size: 1.1em; color: #4f8cff; background: #eaf1ff; border-radius: 4px; padding: 6px 14px; display: inline-block; cursor: pointer; transition: background 0.2s; border: none; outline: none; }
+    #suggestion-word:hover { background: #d0e3ff; }
+    #suggestion-word[hidden] { display: none; }
+    .loading { color: #4f8cff; font-size: 0.95em; margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+    .error { color: #d32f2f; font-size: 0.95em; margin-top: 10px; }
+    @media (max-width: 600px) { .container { max-width: 98vw; } #input-box { font-size: 1em; } #suggestion-word { font-size: 1em; } }
   </style>
 </head>
 <body>
@@ -145,7 +81,6 @@
       }
     });
 
-    // Optional: Press Tab to accept suggestion
     inputBox.addEventListener('keydown', (e) => {
       if (e.key === "Tab" && nextWord) {
         e.preventDefault();
@@ -153,7 +88,6 @@
       }
     });
 
-    // Autofocus input on load
     window.onload = () => inputBox.focus();
   </script>
 </body>

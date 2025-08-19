@@ -1,5 +1,0 @@
-hello world this is a simple next word prediction example
-machine learning is fun and powerful
-deep learning enables amazing applications
-predict the next word in this sentence
-this project demonstrates a basic language model

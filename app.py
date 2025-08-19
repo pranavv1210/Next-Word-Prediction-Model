@@ -1,29 +1,31 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from transformers import pipeline
-import re
+import google.generativeai as genai
 
 app = Flask(__name__)
 CORS(app)
 
-# Use a larger model for better predictions
-generator = pipeline('text-generation', model='gpt2')
+genai.configure(api_key="AIzaSyDujJuxV5l1dj3VNz_79WPA-Wfjrc774vU")
 
-def predict_next_word(text):
-    output = generator(text, max_new_tokens=3, num_return_sequences=1)
-    generated = output[0]['generated_text']
-    continuation = generated[len(text):].strip()
-    # Only pick the first valid word (letters only)
-    match = re.match(r"([A-Za-z']+)", continuation)
-    next_word = match.group(1) if match else ""
-    print(f"Input: '{text}' | Generated: '{generated}' | Next word: '{next_word}'")
+# List available models for debugging
+print("Available models:")
+for m in genai.list_models():
+    print(m.name)
+
+# Use the correct model name from the list above
+model = genai.GenerativeModel("models/gemini-pro")
+
+def get_next_word(text):
+    prompt = f"Given the text: '{text}', predict only the next word (do not repeat the input, do not add punctuation, do not explain, just the next word):"
+    response = model.generate_content(prompt)
+    next_word = response.text.strip().split()[0]
     return next_word
 
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.json
     text = data.get("text", "")
-    next_word = predict_next_word(text)
+    next_word = get_next_word(text)
     return jsonify({"next_word": next_word})
 
 if __name__ == "__main__":
