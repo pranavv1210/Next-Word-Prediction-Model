@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Next Word Prediction (AI-powered)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: #f7f7fa;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      min-height: 100vh;
+    }
+    h2 {
+      margin-top: 40px;
+      color: #333;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    #input-box {
+      font-size: 1.2em;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 10px;
+      border: 1.5px solid #bbb;
+      border-radius: 6px;
+      background: #fff;
+      color: #222;
+      outline: none;
+      z-index: 2;
+      position: relative;
+    }
+    #input-box:focus {
+      border-color: #4f8cff;
+      box-shadow: 0 0 0 2px #e0eaff;
+    }
+    #suggestion-word {
+      margin-top: 12px;
+      font-size: 1.1em;
+      color: #4f8cff;
+      background: #eaf1ff;
+      border-radius: 4px;
+      padding: 6px 14px;
+      display: inline-block;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      outline: none;
+    }
+    #suggestion-word:hover {
+      background: #d0e3ff;
+    }
+    #suggestion-word[hidden] {
+      display: none;
+    }
+    .loading {
+      color: #4f8cff;
+      font-size: 0.95em;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .error {
+      color: #d32f2f;
+      font-size: 0.95em;
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .container { max-width: 98vw; }
+      #input-box { font-size: 1em; }
+      #suggestion-word { font-size: 1em; }
+    }
+  </style>
+</head>
+<body>
+  <h2>Next Word Prediction (AI-powered)</h2>
+  <div class="container">
+    <input type="text" id="input-box" autocomplete="off" spellcheck="false" placeholder="Type your sentence..." />
+    <button id="suggestion-word" hidden></button>
+    <div id="loading" class="loading" style="display:none;">&#8635; Predicting...</div>
+    <div id="error" class="error" style="display:none;"></div>
+  </div>
+  <script>
+    const inputBox = document.getElementById('input-box');
+    const suggestionBtn = document.getElementById('suggestion-word');
+    const loading = document.getElementById('loading');
+    const errorDiv = document.getElementById('error');
+    let nextWord = "";
+
+    async function fetchNextWord(text) {
+      if (!text.trim()) {
+        suggestionBtn.hidden = true;
+        nextWord = "";
+        loading.style.display = "none";
+        errorDiv.style.display = "none";
+        return;
+      }
+      loading.style.display = "flex";
+      errorDiv.style.display = "none";
+      try {
+        const response = await fetch('http://127.0.0.1:5000/predict', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({text})
+        });
+        if (!response.ok) throw new Error("Server error");
+        const data = await response.json();
+        nextWord = data.next_word;
+        if (nextWord) {
+          suggestionBtn.textContent = nextWord;
+          suggestionBtn.hidden = false;
+        } else {
+          suggestionBtn.hidden = true;
+        }
+      } catch (err) {
+        suggestionBtn.hidden = true;
+        nextWord = "";
+        errorDiv.textContent = "Prediction failed. Is the backend running?";
+        errorDiv.style.display = "block";
+      }
+      loading.style.display = "none";
+    }
+
+    inputBox.addEventListener('input', () => {
+      fetchNextWord(inputBox.value);
+    });
+
+    suggestionBtn.addEventListener('click', () => {
+      if (nextWord) {
+        inputBox.value = inputBox.value.trim() + " " + nextWord + " ";
+        suggestionBtn.hidden = true;
+        nextWord = "";
+        fetchNextWord(inputBox.value);
+        inputBox.focus();
+      }
+    });
+
+    // Optional: Press Tab to accept suggestion
+    inputBox.addEventListener('keydown', (e) => {
+      if (e.key === "Tab" && nextWord) {
+        e.preventDefault();
+        suggestionBtn.click();
+      }
+    });
+
+    // Autofocus input on load
+    window.onload = () => inputBox.focus();
+  </script>
+</body>
+</html>

@@ -1,23 +1,28 @@
+from keras.models import Sequential
+from keras.layers import LSTM, Dense, Activation
+
 class WordPredictionModel:
-    def __init__(self, vocab_size, embedding_dim, rnn_units):
-        self.vocab_size = vocab_size
-        self.embedding_dim = embedding_dim
-        self.rnn_units = rnn_units
-        self.model = self.build_model()
+    def __init__(self, input_shape, output_dim):
+        self.input_shape = input_shape
+        self.output_dim = output_dim
+        self.model = None
 
     def build_model(self):
-        from tensorflow.keras import layers, models
+        self.model = Sequential()
+        self.model.add(LSTM(128, input_shape=self.input_shape))
+        self.model.add(Dense(self.output_dim))
+        self.model.add(Activation('softmax'))
 
-        model = models.Sequential()
-        model.add(layers.Embedding(self.vocab_size, self.embedding_dim))
-        model.add(layers.LSTM(self.rnn_units, return_sequences=True))
-        model.add(layers.LSTM(self.rnn_units))
-        model.add(layers.Dense(self.vocab_size, activation='softmax'))
-        return model
+    def compile_model(self):
+        self.model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
-    def compile_model(self, learning_rate=0.001):
-        from tensorflow.keras.optimizers import Adam
+    def fit(self, X_train, y_train, validation_data, epochs=10, batch_size=32):
+        return self.model.fit(
+            X_train, y_train,
+            validation_data=validation_data,
+            epochs=epochs,
+            batch_size=batch_size
+        )
 
-        self.model.compile(loss='sparse_categorical_crossentropy',
-                           optimizer=Adam(learning_rate),
-                           metrics=['accuracy'])
+    def save(self, filepath):
+        self.model.save(filepath)
