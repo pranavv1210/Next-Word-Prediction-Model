@@ -73,7 +73,7 @@
 
     suggestionBtn.addEventListener('click', () => {
       if (nextWord) {
-        inputBox.value = inputBox.value.trim() + " " + nextWord + " ";
+        inputBox.value = inputBox.value.trim() + " " + nextWord;
         suggestionBtn.hidden = true;
         nextWord = "";
         fetchNextWord(inputBox.value);

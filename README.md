@@ -1,74 +1,90 @@
-# Next Word Prediction Model
+# Next Word Prediction (AI-powered)
 
-This project is an AI-powered web app that predicts the next word as you type. It uses a Python Flask backend with a GPT-2 language model and a simple HTML/JS frontend.
+This project is a web app for predicting the next word in a sentence using AI models. You can use either a custom-trained Keras model or a large language model API (like Gemini or GPT-2) for predictions.
 
 ---
 
 ## Features
 
-- Predicts the next word for your sentence in real time
-- Click or press Tab to accept the suggestion, or type your own word
-- Modern, responsive frontend
-- Easy to run locally
+- **Frontend:** Simple web interface for entering text and seeing next-word suggestions.
+- **Backend:** Flask API that predicts the next word using a selected AI model.
+- **Model Options:**
+  - Custom Keras model (trained on your own data)
+  - Hugging Face GPT-2 (no training required)
+  - Google Gemini API (requires API key)
 
 ---
 
-## Requirements
+## Setup
 
-- Python 3.7+
-- pip
+### 1. Clone the Repository
 
----
-
-## Installation
-
-1. **Clone the repository**  
-   ```
-   git clone <your-repo-url>
-   cd Next-Word-Prediction-Model/next-word-prediction
-   ```
-
-2. **Install Python dependencies**  
-   ```
-   pip install -r requirements.txt
-   ```
-
----
-
-## Running the App
-
-### 1. Start the Backend (Flask API)
-
+```sh
+git clone <your-repo-url>
+cd Next\ Word\ Prediction\ Model/next-word-prediction
 ```
-python app.py
-```
-- The backend will run at `http://127.0.0.1:5000`.
 
-### 2. Serve the Frontend
+### 2. Install Dependencies
 
-In a new terminal, run:
+For Keras or GPT-2:
+```sh
+pip install flask flask-cors tensorflow numpy transformers torch
 ```
-python -m http.server 8000
+
+For Gemini API:
+```sh
+pip install flask flask-cors google-generativeai
 ```
-- Open your browser and go to: [http://localhost:8000/index.html](http://localhost:8000/index.html)
 
 ---
 
 ## Usage
 
-- Start typing a sentence in the input box.
-- The predicted next word will appear as a blue button below.
-- Click the button or press `Tab` to insert the suggestion.
-- You can also ignore the suggestion and type your own word.
+### **A. Using a Custom Keras Model**
+
+1. **Train the model:**
+   - Edit `train_model.py` with your own sentences.
+   - Run:
+     ```sh
+     python train_model.py
+     ```
+   - This will generate `keras_next_word_model.h5`, `tokenizer.pkl`, and `WORD_LENGTH.pkl`.
+
+2. **Start the backend:**
+   ```sh
+   python app.py
+   ```
+
+3. **Open `index.html` in your browser.**
 
 ---
 
-## Customization
+### **B. Using Hugging Face GPT-2 (No Training Needed)**
 
-- **Model:**  
-  By default, the backend uses `gpt2` for predictions. You can change the model in `app.py` for different results.
-- **Your Own Model:**  
-  If you have a fine-tuned Keras model, you can integrate it by modifying `app.py`.
+1. Replace your `app.py` with the GPT-2 version (see earlier in this chat).
+2. Install dependencies:
+   ```sh
+   pip install flask flask-cors transformers torch
+   ```
+3. Start the backend:
+   ```sh
+   python app.py
+   ```
+
+---
+
+### **C. Using Google Gemini API**
+
+1. Get your Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Replace your `app.py` with the Gemini version (see earlier in this chat).
+3. Install dependencies:
+   ```sh
+   pip install flask flask-cors google-generativeai
+   ```
+4. Start the backend:
+   ```sh
+   python app.py
+   ```
 
 ---
 
@@ -76,39 +92,30 @@ python -m http.server 8000
 
 ```
 next-word-prediction/
-│
-├── app.py                # Flask backend
-├── index.html            # Frontend
-├── requirements.txt      # Python dependencies
-├── README.md
-├── keras_next_word_model.h5  # (Optional) Your own Keras model
-├── sample.txt
-├── unique_words.pkl
-├── unique_word_index.pkl
+├── app.py
+├── train_model.py
+├── index.html
+├── keras_next_word_model.h5
+├── tokenizer.pkl
 ├── WORD_LENGTH.pkl
-├── notebooks/
-│   └── exploration.ipynb
-└── src/
-    ├── data_preprocessing.py
-    ├── model.py
-    ├── predict.py
-    ├── train.py
-    └── utils.py
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-## Troubleshooting
+## Notes
 
-- **No prediction appears:**  
-  Make sure both backend and frontend servers are running. Check the browser console and backend terminal for errors.
-- **CORS errors:**  
-  The backend enables CORS by default. If you change ports or domains, update CORS settings in `app.py`.
-- **Slow predictions:**  
-  The first prediction may take a few seconds as the model loads.
+- **API keys are sensitive.** Never share them publicly.
+- For best results, use a large and diverse dataset when training your own model.
+- If using Gemini or GPT-2, you do not need to train a model.
 
 ---
 
 ## License
 
-This project is for educational purposes.
+MIT License
+
+---
+
+## Credits
