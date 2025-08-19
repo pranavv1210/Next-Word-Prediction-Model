@@ -10,8 +10,8 @@ app = Flask(__name__)
 CORS(app)
 
 # --- Configuration for your Keras model ---
-# It's highly recommended to use environment variables for API keys in production
-# For this example, we'll remove the hardcoded Gemini API key, as it's not needed for the Keras model.
+# It's highly recommended to use environment variables for API keys in production.
+# The hardcoded Gemini API key is removed as it's not needed for the Keras model.
 
 # Load the pre-trained Keras model
 # Ensure the path is correct if your file structure is different on deployment
@@ -20,7 +20,7 @@ try:
     print("Keras model loaded successfully.")
 except Exception as e:
     print(f"Error loading Keras model: {e}")
-    model = None # Set model to None if loading fails
+    model = None  # Set model to None if loading fails
 
 # Load the tokenizer
 try:
@@ -50,20 +50,15 @@ def get_next_word_keras(text):
     token_list = tokenizer.texts_to_sequences([text])[0]
 
     # Pad the sequence to the maximum length expected by the model
-    # Note: The model expects input_length to be max_sequence_len - 1
-    # because the last word is the prediction target.
-    # So, we pad to max_sequence_len and then take all but the last element for prediction.
-    # The `X.shape[1]` from train_model.py is the correct input_length.
-    # Let's use max_sequence_len directly for padding here for consistency.
+    # The model was trained with input_length = X.shape[1] which is `max_sequence_len - 1`
+    # So, we slice the padded input to match the expected input shape of the model.
     padded_token_list = pad_sequences([token_list], maxlen=max_sequence_len, padding='pre')[0]
-
-    # The model was trained with input_length = X.shape[1] which is `max_sequence_len - 1` when used for X
-    # So, we need to ensure the input to the model is of this length.
-    # If max_sequence_len is 5 (from WORD_LENGTH.pkl), X.shape[1] would be 4.
-    # We slice the padded input to match the expected input shape of the model.
-    model_input = np.array([padded_token_list[:-1]]) # Take all but the last element for prediction
+    
+    # Take all but the last element for prediction, as the last element was the target during training.
+    model_input = np.array([padded_token_list[:-1]]) 
 
     # Predict the next word's probability distribution
+    # Using verbose=0 to suppress prediction progress logs
     predicted_probs = model.predict(model_input, verbose=0)
 
     # Get the index of the word with the highest probability
@@ -79,12 +74,13 @@ def get_next_word_keras(text):
 def predict():
     data = request.json
     text = data.get("text", "")
-    next_word = get_next_word_keras(text) # Use the Keras prediction function
+    # Use the Keras prediction function
+    next_word = get_next_word_keras(text)
     return jsonify({"next_word": next_word})
 
 if __name__ == "__main__":
     # Ensure the Flask app is only run if the model and tokenizer loaded successfully.
-    if model and tokenizer and max_sequence_len is not None:
+    if model is not None and tokenizer is not None and max_sequence_len is not None:
         app.run(debug=True)
     else:
         print("Flask app cannot start due to missing model, tokenizer, or WORD_LENGTH file.")

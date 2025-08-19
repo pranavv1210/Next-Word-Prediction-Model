@@ -73,10 +73,14 @@
 
     suggestionBtn.addEventListener('click', () => {
       if (nextWord) {
-        inputBox.value = inputBox.value.trim() + " " + nextWord;
+        // Updated line to append the next word without an extra trailing space
+        inputBox.value = inputBox.value.trim() + " " + nextWord; 
+        
         suggestionBtn.hidden = true;
         nextWord = "";
-        fetchNextWord(inputBox.value);
+        // Removed redundant call to fetchNextWord, as the 'input' event listener
+        // will trigger automatically due to the change in inputBox.value.
+        // fetchNextWord(inputBox.value); 
         inputBox.focus();
       }
     });
